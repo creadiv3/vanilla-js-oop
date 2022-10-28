@@ -138,6 +138,9 @@
       thisProduct.priceElem = thisProduct.element.querySelector(
         select.menuProduct.priceElem
       );
+      thisProduct.imageWrapper = thisProduct.element.querySelector(
+        select.menuProduct.imageWrapper
+      );
     }
 
     // method to open and close chosen option, quantity and add to cart button
@@ -184,7 +187,7 @@
       });
     }
 
-    // calculate price
+    // calculate price and show/hide images depend on chosen option
     processOrder() {
       const thisProduct = this;
 
@@ -199,14 +202,27 @@
         for (let optionId in param.options) {
           const option = param.options[optionId];
 
+          const optionImage = thisProduct.imageWrapper.querySelector(
+            `.${paramId}-${optionId}`
+          );
+
+          const optionSelected =
+            formData[paramId] && formData[paramId].includes(optionId);
+
           // check if there is param with a name of paramId in formData and if it includes optionId
-          if (formData[paramId] && formData[paramId].includes(optionId)) {
+          if (optionSelected) {
+            if (optionImage) {
+              optionImage.classList.add(classNames.menuProduct.imageVisible);
+            }
             // check if the option is not default
             if (!option.default) {
               // add option price to price variable
               price += option.price;
             }
           } else {
+            if (optionImage) {
+              optionImage.classList.remove(classNames.menuProduct.imageVisible);
+            }
             // check if the option is default
             if (option.default) {
               // reduce price variable

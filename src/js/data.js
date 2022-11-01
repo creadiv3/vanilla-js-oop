@@ -1,4 +1,5 @@
-const dataSource = {}; // eslint-disable-line no-unused-vars
+/* eslint-disable */
+const dataSource = {};
 
 dataSource.products = {
   cake: {
@@ -29,6 +30,7 @@ dataSource.products = {
       },
     },
   },
+
   pizza: {
     name: "Nonna Alba's Pizza",
     price: 20,
@@ -112,3 +114,4 @@ dataSource.products = {
     },
   },
 };
+/* eslint-enable */

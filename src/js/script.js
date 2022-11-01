@@ -200,8 +200,9 @@
           }
         }
       }
-
+      // to calc price based on amount of product
       price *= thisProduct.amountWidget.value;
+
       thisProduct.priceElem.innerHTML = price;
     }
 
@@ -210,6 +211,7 @@
 
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
 
+      // add event to my own created listener
       thisProduct.amountWidgetElem.addEventListener('updated', function () {
         thisProduct.processOrder();
       });
@@ -280,7 +282,7 @@
       });
     }
 
-    // create own event updated
+    // create own event => updated
     announce() {
       const thisWidget = this;
 

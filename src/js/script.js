@@ -118,25 +118,27 @@
     getElement() {
       const thisProduct = this;
 
-      thisProduct.accordionTrigger = thisProduct.element.querySelector(
+      thisProduct.dom = {};
+
+      thisProduct.dom.accordionTrigger = thisProduct.element.querySelector(
         select.menuProduct.clickable
       );
-      thisProduct.form = thisProduct.element.querySelector(
+      thisProduct.dom.form = thisProduct.element.querySelector(
         select.menuProduct.form
       );
-      thisProduct.formInputs = thisProduct.form.querySelectorAll(
+      thisProduct.dom.formInputs = thisProduct.dom.form.querySelectorAll(
         select.all.formInputs
       );
-      thisProduct.cartButton = thisProduct.element.querySelector(
+      thisProduct.dom.cartButton = thisProduct.element.querySelector(
         select.menuProduct.cartButton
       );
-      thisProduct.priceElem = thisProduct.element.querySelector(
+      thisProduct.dom.priceElem = thisProduct.element.querySelector(
         select.menuProduct.priceElem
       );
-      thisProduct.imageWrapper = thisProduct.element.querySelector(
+      thisProduct.dom.imageWrapper = thisProduct.element.querySelector(
         select.menuProduct.imageWrapper
       );
-      thisProduct.amountWidgetElem = thisProduct.element.querySelector(
+      thisProduct.dom.amountWidgetElem = thisProduct.element.querySelector(
         select.menuProduct.amountWidget
       );
     }
@@ -145,7 +147,7 @@
     initAccordion() {
       const thisProduct = this;
 
-      thisProduct.accordionTrigger.addEventListener('click', event => {
+      thisProduct.dom.accordionTrigger.addEventListener('click', event => {
         event.preventDefault();
 
         const activeProduct = document.querySelector(
@@ -166,19 +168,19 @@
     initOrderForm() {
       const thisProduct = this;
 
-      thisProduct.form.addEventListener('submit', event => {
+      thisProduct.dom.form.addEventListener('submit', event => {
         event.preventDefault();
 
         thisProduct.processOrder();
       });
 
-      for (let input of thisProduct.formInputs) {
+      for (let input of thisProduct.dom.formInputs) {
         input.addEventListener('change', () => {
           thisProduct.processOrder();
         });
       }
 
-      thisProduct.cartButton.addEventListener('click', event => {
+      thisProduct.dom.cartButton.addEventListener('click', event => {
         event.preventDefault();
 
         thisProduct.processOrder();
@@ -190,7 +192,7 @@
       const thisProduct = this;
 
       // covnert html form to object
-      const formData = utils.serializeFormToObject(thisProduct.form);
+      const formData = utils.serializeFormToObject(thisProduct.dom.form);
 
       let price = thisProduct.data.price;
 
@@ -200,7 +202,7 @@
         for (let optionId in param.options) {
           const option = param.options[optionId];
 
-          const optionImage = thisProduct.imageWrapper.querySelector(
+          const optionImage = thisProduct.dom.imageWrapper.querySelector(
             `.${paramId}-${optionId}`
           );
 
@@ -232,16 +234,18 @@
       // to calc price based on amount of product
       price *= thisProduct.amountWidget.value;
 
-      thisProduct.priceElem.innerHTML = price;
+      thisProduct.dom.priceElem.innerHTML = price;
     }
 
     initAmountWidget() {
       const thisProduct = this;
 
-      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+      thisProduct.amountWidget = new AmountWidget(
+        thisProduct.dom.amountWidgetElem
+      );
 
       // add event to my own created listener
-      thisProduct.amountWidgetElem.addEventListener('updated', function () {
+      thisProduct.dom.amountWidgetElem.addEventListener('updated', function () {
         thisProduct.processOrder();
       });
     }
@@ -263,14 +267,16 @@
     getElements(element) {
       const thisWidget = this;
 
-      thisWidget.element = element;
-      thisWidget.input = thisWidget.element.querySelector(
+      thisWidget.dom = {};
+
+      thisWidget.dom.element = element;
+      thisWidget.dom.input = thisWidget.dom.element.querySelector(
         select.widgets.amount.input
       );
-      thisWidget.linkDecrease = thisWidget.element.querySelector(
+      thisWidget.dom.linkDecrease = thisWidget.dom.element.querySelector(
         select.widgets.amount.linkDecrease
       );
-      thisWidget.linkIncrease = thisWidget.element.querySelector(
+      thisWidget.dom.linkIncrease = thisWidget.dom.element.querySelector(
         select.widgets.amount.linkIncrease
       );
     }
@@ -291,21 +297,21 @@
         thisWidget.announce();
       }
 
-      thisWidget.input.value = thisWidget.value;
+      thisWidget.dom.input.value = thisWidget.value;
     }
 
     // add event listener to buttons and inputs
     initAction() {
       const thisWidget = this;
 
-      thisWidget.input.addEventListener('change', function () {
-        thisWidget.setValue(thisWidget.input.value);
+      thisWidget.dom.input.addEventListener('change', function () {
+        thisWidget.setValue(thisWidget.dom.input.value);
       });
-      thisWidget.linkDecrease.addEventListener('click', function (event) {
+      thisWidget.dom.linkDecrease.addEventListener('click', function (event) {
         event.preventDefault();
         thisWidget.setValue(thisWidget.value - 1);
       });
-      thisWidget.linkIncrease.addEventListener('click', function (event) {
+      thisWidget.dom.linkIncrease.addEventListener('click', function (event) {
         event.preventDefault();
         thisWidget.setValue(thisWidget.value + 1);
       });
@@ -316,7 +322,28 @@
       const thisWidget = this;
 
       const event = new Event('updated');
-      thisWidget.element.dispatchEvent(event);
+      thisWidget.dom.element.dispatchEvent(event);
+    }
+  }
+
+  // shema for cart
+  class Cart {
+    constructor(element) {
+      const thisCart = this;
+
+      thisCart.products = [];
+
+      thisCart.getElements(element);
+
+      console.log('new Cart: ', thisCart);
+    }
+
+    getElements(element) {
+      const thisCart = this;
+
+      thisCart.dom = {};
+
+      thisCart.dom.wrapper = element;
     }
   }
 

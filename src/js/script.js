@@ -184,6 +184,7 @@
         event.preventDefault();
 
         thisProduct.processOrder();
+        thisProduct.addToCart();
       });
     }
 
@@ -234,6 +235,7 @@
       // to calc price based on amount of product
       price *= thisProduct.amountWidget.value;
 
+      thisProduct.priceSingle = price;
       thisProduct.dom.priceElem.innerHTML = price;
     }
 
@@ -249,6 +251,31 @@
         thisProduct.processOrder();
       });
     }
+
+    // pass instance of product to add method
+    addToCart() {
+      const thisProduct = this;
+
+      // pass to add method obj with summary
+      app.cart.add(thisProduct.prepareCartProduct());
+    }
+
+    // prepare smaller obj with only necessary info
+    prepareCartProduct() {
+      const thisProduct = this;
+
+      const productSummary = {};
+
+      productSummary.id = thisProduct.id;
+      productSummary.name = thisProduct.data.name;
+      productSummary.amount = thisProduct.amountWidget.value;
+      productSummary.priceSingle = thisProduct.priceSingle;
+      productSummary.price =
+        thisProduct.priceSingle * thisProduct.amountWidget.value;
+      productSummary.params = {};
+
+      return productSummary;
+    }
   }
 
   // shema for widget where we can change amount of our product
@@ -257,7 +284,7 @@
       const thisWidget = this;
 
       thisWidget.getElements(element);
-      thisWidget.initAction();
+      thisWidget.initActions();
       thisWidget.setValue(settings.amountWidget.defaultValue);
 
       // console.log('AmountWidget: ', thisWidget);
@@ -301,7 +328,7 @@
     }
 
     // add event listener to buttons and inputs
-    initAction() {
+    initActions() {
       const thisWidget = this;
 
       thisWidget.dom.input.addEventListener('change', function () {
@@ -331,11 +358,13 @@
     constructor(element) {
       const thisCart = this;
 
+      // array for our products in cart
       thisCart.products = [];
 
       thisCart.getElements(element);
+      thisCart.initActions();
 
-      console.log('new Cart: ', thisCart);
+      // console.log('new Cart: ', thisCart);
     }
 
     getElements(element) {
@@ -344,6 +373,24 @@
       thisCart.dom = {};
 
       thisCart.dom.wrapper = element;
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
+        select.cart.toggleTrigger
+      );
+    }
+
+    // toggle active class to open/close cart
+    initActions() {
+      const thisCart = this;
+
+      thisCart.dom.toggleTrigger.addEventListener('click', function () {
+        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+      });
+    }
+
+    add(menuProduct) {
+      // const thisCart = this;
+
+      console.log('adding product', menuProduct);
     }
   }
 
@@ -366,6 +413,14 @@
       thisApp.data = dataSource;
     },
 
+    // create instance for cart
+    initCart() {
+      const thisApp = this;
+
+      const cartElem = document.querySelector(select.containerOf.cart);
+      thisApp.cart = new Cart(cartElem);
+    },
+
     // function where we initialize other func
     init() {
       const thisApp = this;
@@ -377,6 +432,7 @@
 
       thisApp.initData();
       thisApp.initMenu();
+      thisApp.initCart();
     },
   };
 

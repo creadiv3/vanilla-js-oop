@@ -272,12 +272,38 @@
       productSummary.priceSingle = thisProduct.priceSingle;
       productSummary.price =
         thisProduct.priceSingle * thisProduct.amountWidget.value;
-      productSummary.params = {};
+      productSummary.params = thisProduct.prepareCartProductParams();
 
       return productSummary;
     }
-  }
 
+    prepareCartProductParams() {
+      const thisProduct = this;
+      const formData = utils.serializeFormToObject(thisProduct.dom.form);
+      const params = {};
+
+      for (let paramId in thisProduct.data.params) {
+        const param = thisProduct.data.params[paramId];
+
+        params[paramId] = {
+          label: param.label,
+          options: {},
+        };
+
+        for (let optionId in param.options) {
+          const option = param.options[optionId];
+          const optionSelected =
+            formData[paramId] && formData[paramId].includes(optionId);
+
+          if (optionSelected) {
+            params[paramId].options[optionId] = option.label;
+          }
+        }
+      }
+
+      return params;
+    }
+  }
   // shema for widget where we can change amount of our product
   class AmountWidget {
     constructor(element) {
@@ -376,6 +402,9 @@
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
         select.cart.toggleTrigger
       );
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(
+        select.cart.productList
+      );
     }
 
     // toggle active class to open/close cart
@@ -387,10 +416,13 @@
       });
     }
 
+    // add products to cart
     add(menuProduct) {
-      // const thisCart = this;
+      const thisCart = this;
+      const generatedHTML = templates.cartProduct(menuProduct);
+      const generatedDOM = utils.createDOMFromHTML(generatedHTML);
 
-      console.log('adding product', menuProduct);
+      thisCart.dom.productList.appendChild(generatedDOM);
     }
   }
 

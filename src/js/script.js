@@ -72,6 +72,11 @@
     cart: {
       defaultDeliveryFee: 20,
     },
+    db: {
+      url: '//localhost:3131',
+      products: 'products',
+      orders: 'orders',
+    },
   };
 
   const templates = {
@@ -439,15 +444,12 @@
     remove(cartProduct) {
       const thisCart = this;
 
-      console.log(cartProduct);
-
       cartProduct.dom.wrapper.remove();
 
       const indexOfProduct = thisCart.products.indexOf(cartProduct);
       thisCart.products.splice(indexOfProduct, 1);
 
       thisCart.update();
-      console.log(thisCart.products);
     }
 
     // add products to cart
@@ -578,7 +580,10 @@
       // console.log('thisApp.data: ', thisApp.data);
 
       for (let productData in thisApp.data.products) {
-        new Product(productData, thisApp.data.products[productData]);
+        new Product(
+          thisApp.data.products[productData].id,
+          thisApp.data.products[productData]
+        );
       }
     },
 
@@ -586,7 +591,19 @@
     initData() {
       const thisApp = this;
 
-      thisApp.data = dataSource;
+      thisApp.data = {};
+
+      const url = `${settings.db.url}/${settings.db.products}`;
+
+      fetch(url)
+        .then(rawResponse => rawResponse.json())
+        .then(parsedResponse => {
+          thisApp.data.products = parsedResponse;
+
+          thisApp.initMenu();
+        });
+
+      console.log('thisApp.data: ', JSON.stringify(thisApp.data));
     },
 
     // create instance for cart
@@ -607,7 +624,6 @@
       // console.log('templates:', templates);
 
       thisApp.initData();
-      thisApp.initMenu();
       thisApp.initCart();
     },
   };
